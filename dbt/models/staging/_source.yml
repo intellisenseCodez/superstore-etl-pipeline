@@ -6,4 +6,5 @@ sources:
     schema: raw  
     tables:
       - name: raw_orders
+        description: "Original Superstore sales dataset"
   
