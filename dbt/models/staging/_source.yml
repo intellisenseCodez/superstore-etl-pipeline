@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw
+    database: superstore  
+    schema: raw  
+    tables:
+      - name: raw_orders
+  
