@@ -42,14 +42,18 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
 
-            - name: Extract and Load Raw Data to Postgres
-              env:
-                DATABASE_NAME: ${{ env.DATABASE_NAME }}
-                DATABASE_USER: ${{ env.DATABASE_USER }}
-                DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-                DATABASE_HOST: postgres
-                PORT: ${{ job.services.postgres.ports[5432] }}
+            - name: Install dependencies
               run: |
-                echo "Hello world"
-                python etl/main.py
+                docker container ps
+
+            # - name: Extract and Load Raw Data to Postgres
+            #   env:
+            #     DATABASE_NAME: ${{ env.DATABASE_NAME }}
+            #     DATABASE_USER: ${{ env.DATABASE_USER }}
+            #     DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+            #     DATABASE_HOST: postgres
+            #     PORT: ${{ job.services.postgres.ports[5432] }}
+            #   run: |
+            #     echo "Hello world"
+            #     python etl/main.py
 
