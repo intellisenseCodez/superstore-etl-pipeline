@@ -56,6 +56,13 @@ jobs:
                 echo '⏳ Waiting for PostgreSQL initialization...'
                 echo '🚀 Starting ETL process...'
                 sleep 10
+
+                # Detect postgres container dynamically
+                POSTGRES_HOST=$(docker ps --format "{{.Names}}" | grep -i postgres || echo "postgres_db")
+
+                echo "📦 Using database host: $POSTGRES_HOST"
+                export DATABASE_HOST=$POSTGRES_HOST
+
                 python3 etl/main.py
                 echo '✅ ETL pipeline completed successfully.'
 
