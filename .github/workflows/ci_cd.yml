@@ -82,7 +82,7 @@ jobs:
             DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
             DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
             DATABASE_HOST: localhost
-            PORT: 5432
+            DATABASE_PORT: 5432
 
         steps:
             - name: Checkout code
