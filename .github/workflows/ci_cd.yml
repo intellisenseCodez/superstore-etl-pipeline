@@ -8,17 +8,26 @@ on:
 
 
 jobs:
-  etl:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
+    extract-and-load:
+        name: Extract and Load Raw Data to Postgres
+        runs-on: ubuntu-latest
+    
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Extract and Load Raw Data to Postgres
-        run: python elt/nain.py
+            - name: Set up python 3.10
+              uses: actions/setup-python@v6
+              with:
+                python-version: 3.10
+            
+            - name: Install dependencies
+              run: |
+                cd src
+                python -m pip install --upgrade pip
+                pip install coverage
+                if  [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+            - name: Extract and Load Raw Data to Postgres
+              run: python elt/main.py
 
