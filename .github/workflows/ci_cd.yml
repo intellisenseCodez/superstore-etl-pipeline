@@ -33,6 +33,7 @@ jobs:
                 -e POSTGRES_USER=${{ secrets.DATABASE_USER }} \
                 -e POSTGRES_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
                 -e POSTGRES_DB=${{ secrets.DATABASE_NAME }} \
+                -v ${{ github.workspace }}/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro \
                 -p 5432:5432 \
                 postgres:14
                     
