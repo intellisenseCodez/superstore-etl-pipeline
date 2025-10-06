@@ -18,17 +18,17 @@ jobs:
 
             - name: Check if raw data is available
               run: |
-                echo "🔍 Checking for raw data files in ./datatable/raw/ ..."
+                echo "🔍 Checking for raw data files in ./datasets/raw/ ..."
                 
-                if [ -n "$(ls -A ./datatable/raw/ 2>/dev/null)" ]; then
+                if [ -n "$(ls -A ./datasets/raw/ 2>/dev/null)" ]; then
                     echo "✅ Raw data files found."
                 else
-                    echo "❌ No raw data files found in ./datatable/raw/"
+                    echo "❌ No raw data files found in ./datasets/raw/"
                 exit 1
                 fi
     
     load-raw-data:
-        name: Check if raw data source is available
+        name: Load Raw Data to Postgres
         runs-on: ubuntu-latest
         needs: check-data-source
         if: success()
@@ -43,7 +43,7 @@ jobs:
 
 
     extract-and-load:
-        name: Check if raw data source is available
+        name: Extract and Load Raw Data to Postgres
         runs-on: ubuntu-latest
         needs: check-data-source
         if: failure()
