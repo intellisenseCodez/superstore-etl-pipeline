@@ -25,12 +25,7 @@ jobs:
                     POSTGRES_DB: $DATABASE_NAME
                 ports:
                     - "5432:5432"
-                options: >-
-                    --name postgres_db
-                    --health-cmd="pg_isready -U $DATABASE_USER
-                    --health-interval=10s 
-                    --health-timeout=5s 
-                    --health-retries=5
+                options: --name=postgres_db --health-cmd="pg_isready -U $DATABASE_USER --health-interval=10s --health-timeout=5s --health-retries=5
             
         steps:
             - name: Checkout code
