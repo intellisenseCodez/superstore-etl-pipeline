@@ -201,8 +201,6 @@ Once your GitHub secrets are properly configured, the workflow will:
 - The DBT test pipeline also runs in parallel to confirm that all models and tests pass successfully.
 
 
-
-
 ## 8. 📊 Visualization and Report (Streamlit)
 
 The Streamlit dashboard visualizes your mart data for reporting and analytics.
