@@ -26,7 +26,7 @@ jobs:
                 ports:
                     - "5432:5432"
                 options: >-
-                    --hostname=postgres_db
+                    --name postgres_db
                     --health-cmd="pg_isready -U $DATABASE_USER
                     --health-interval=10s 
                     --health-timeout=5s 
