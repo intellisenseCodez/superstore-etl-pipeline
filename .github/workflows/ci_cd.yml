@@ -42,24 +42,29 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
 
-
-            - name: Wait for Postgres to be ready
+            - name: Check container name
               run: |
-                until pg_isready -h postgres -p 5432 -U ${{ env.DATABASE_USER }}; do
-                    echo "Waiting for Postgres..."
-                    sleep 10
-                done
-                echo "✅ Postgres is ready!"
+                docker ps --format "{{.Names}}"
+                    
 
 
-            - name: Extract and Load Raw Data to Postgres
-              env:
-                DATABASE_NAME: ${{ env.DATABASE_NAME }}
-                DATABASE_USER: ${{ env.DATABASE_USER }}
-                DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-                DATABASE_HOST: postgres 
-                PORT: ${{ job.services.postgres.ports[5432] }}
-              run: |
-                echo "🚀 Running ETL process..."
-                python etl/main.py
+            # - name: Wait for Postgres to be ready
+            #   run: |
+            #     until pg_isready -h postgres -p 5432 -U ${{ env.DATABASE_USER }}; do
+            #         echo "Waiting for Postgres..."
+            #         sleep 10
+            #     done
+            #     echo "✅ Postgres is ready!"
+
+
+            # - name: Extract and Load Raw Data to Postgres
+            #   env:
+            #     DATABASE_NAME: ${{ env.DATABASE_NAME }}
+            #     DATABASE_USER: ${{ env.DATABASE_USER }}
+            #     DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+            #     DATABASE_HOST: postgres 
+            #     PORT: ${{ job.services.postgres.ports[5432] }}
+            #   run: |
+            #     echo "🚀 Running ETL process..."
+            #     python etl/main.py
 
