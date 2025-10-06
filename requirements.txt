@@ -4,5 +4,3 @@ kagglehub
 python-dotenv
 psycopg2-binary
 SQLAlchemy
-dbt-core
-dbt-postgres

@@ -19,7 +19,9 @@ services:
             start_period: 10s
 
     etl_app:
-        build: .
+        build:
+            context: .
+            dockerfile: ./docker/etl/Dockerfile
         container_name: etl_app
         depends_on:
             postgres_db:
@@ -32,12 +34,10 @@ services:
             PORT: 5432
     
     dbt:
-        image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest
+        build:
+            context: .
+            dockerfile: ./docker/dbt/Dockerfile
         container_name: dbt
-        volumes:
-            - ./dbt/:/src/dbt
-            - ./profiles.yml:/root/.dbt/profiles.yml
-        working_dir: /src/dbt
         depends_on:
            postgres_db:
                condition: service_healthy
@@ -48,16 +48,7 @@ services:
             DATABASE_PASSWORD: ${DATABASE_PASSWORD}
             DATABASE_HOST: postgres_db
             DATABASE_PORT: 5432
-        entrypoint: ["/bin/bash", "-c"]
-        command: 
-            - |  
-                echo '🚀 Running dbt build...';
-                dbt deps --profiles-dir /root/.dbt;
-                dbt build --profiles-dir /root/.dbt;
-                echo '✅ dbt build complete.';
-                tail -f /dev/null
 
-    
 
 volumes:
   postgres_data:
