@@ -42,19 +42,30 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
 
-            - name: Check container name
+            - name: Detect PostgreSQL container and set DB_HOST
               run: |
-                docker ps --format "{{.Names}}"
+                DB_HOST=$(docker ps --format "{{.Names}}" | grep -i postgres || true)
+
+                if [ -n "$DB_HOST" ]; then
+                    echo "✅ Found PostgreSQL container: $DB_HOST"
+                else
+                    echo "⚠️ No running PostgreSQL container found! Using 'localhost'"
+                    DB_HOST="localhost"
+                fi
+
+                echo "Database host set to: $DB_HOST"
+                echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
                     
 
 
-            # - name: Wait for Postgres to be ready
-            #   run: |
-            #     until pg_isready -h postgres -p 5432 -U ${{ env.DATABASE_USER }}; do
-            #         echo "Waiting for Postgres..."
-            #         sleep 10
-            #     done
-            #     echo "✅ Postgres is ready!"
+            - name: Wait for Postgres to be ready
+              run: |
+                echo "⏳ Waiting for PostgreSQL to be ready..."
+                until pg_isready -h $DB_HOST -p 5432 -U $DATABASE_USER; do
+                    echo "Waiting for Postgres..."
+                    sleep 5
+                done
+                echo "✅ PostgreSQL is ready!"
 
 
             # - name: Extract and Load Raw Data to Postgres
