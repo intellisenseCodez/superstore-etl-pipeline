@@ -126,10 +126,10 @@ jobs:
               run: |
                 echo "🏗️ Running dbt models..."
                 cd ./dbt
-                dbt run --profiles-dir .
+                dbt run --profiles-dir ./profiles.yml
 
             - name: Run dbt tests
               run: |
                 echo "🧪 Running dbt tests..."
                 cd ./dbt
-                dbt test --profiles-dir .
+                dbt test --profiles-dir ./profiles.yml
