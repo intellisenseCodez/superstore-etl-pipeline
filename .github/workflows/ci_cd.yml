@@ -139,3 +139,68 @@ jobs:
                 echo "🧪 Running dbt tests..."
                 cd ./dbt
                 dbt test
+
+    build-and-push-etl-docker:
+        name: Build & Push ETL Pipeline Docker Image
+        runs-on: ubuntu-latest
+        needs: [test-etl-pipeline]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and Push Docker Image
+              uses: docker/build-push-action@v6
+              with:
+                context: .
+                push: true
+                tags: |
+                    ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:latest -f ./docker/etl/Dockerfile
+                    ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:${{ github.sha }}
+
+            - name: Image Summary
+              run: |
+                echo "✅ Successfully built and pushed Docker image:"
+                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:latest"
+
+
+    build-and-push-dbt-docker:
+        name: Build & Push DBT Docker Image
+        runs-on: ubuntu-latest
+        needs: [test-dbt-pipeline]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and Push Docker Image
+              uses: docker/build-push-action@v6
+              with:
+                context: .
+                push: true
+                tags: |
+                    ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:latest -f ./docker/dbt/Dockerfile
+                    ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:${{ github.sha }}
+
+            - name: Image Summary
+              run: |
+                echo "✅ Successfully built and pushed Docker image:"
+                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:latest"
