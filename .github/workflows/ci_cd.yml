@@ -25,7 +25,7 @@ jobs:
                     POSTGRES_DB: ${{ env.DATABASE_NAME }}
                 ports:
                     - "5432:5432"
-                options: --name postgres-db --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
             
         steps:
             - name: Checkout code
@@ -43,7 +43,13 @@ jobs:
                 pip install -r requirements.txt
 
             - name: Extract and Load Raw Data to Postgres
+              env:
+                DATABASE_NAME: ${{ env.DATABASE_NAME }}
+                DATABASE_USER: ${{ env.DATABASE_USER }}
+                DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+                DATABASE_HOST: postgres
+                PORT: ${{ job.services.postgres.ports[5432] }}
               run: |
                 echo "Hello world"
-                # python etl/main.py
+                python etl/main.py
 
