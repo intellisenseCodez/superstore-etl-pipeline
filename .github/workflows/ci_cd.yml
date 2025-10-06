@@ -50,7 +50,7 @@ jobs:
                 DATABASE_NAME: ${{ env.DATABASE_NAME }}
                 DATABASE_USER: ${{ env.DATABASE_USER }}
                 DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-                DATABASE_HOST: postgres
+                DATABASE_HOST: $(docker ps --format "{{.Names}}" | grep -i postgres || true)
                 PORT: 5432
               run: |
                 echo '⏳ Waiting for PostgreSQL initialization...'
