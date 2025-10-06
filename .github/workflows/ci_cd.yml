@@ -28,5 +28,5 @@ jobs:
                 pip install -r requirements.txt
 
             - name: Extract and Load Raw Data to Postgres
-              run: python elt/main.py
+              run: python etl/main.py
 
