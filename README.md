@@ -12,7 +12,7 @@ This project implements a **modern data analytics pipeline** for the *Superstore
 5. [🧠 DBT Setup](#4--dbt-setup)  
 6. [🐳 Orchestration: Dockerized Architecture](#5--ochestration-dockerized-architecture)  
 7. [🧪 Testing and Validation](#6--testing-and-validation)  
-8. [🚀 Deployment: Push and Release Docker Images](#7--deployment-push-and-release-docker-images)  
+8. [🚀 Deployment: Push and Release Docker Images](#7--deployment-build-and-push-docker-images-via-github-actions)  
 9. [📊 Visualization and Report (Streamlit)](#8--visualization-and-report-streamlit)
 
 
@@ -77,7 +77,27 @@ The PostgreSQL database acts as the central warehouse. A Postgres docker image w
 ## 4. 🧠 DBT Setup
 
 `dbt` is used for data modeling, transformations, and documentation.
-
+```bash
+services:
+   
+    postgres_db:
+        image: postgres:14
+        container_name: postgres_db
+        environment:
+            POSTGRES_USER: ${DATABASE_USER}
+            POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+            POSTGRES_DB: ${DATABASE_NAME}
+        volumes:
+            - ./scripts/pg_init.sql:/docker-entrypoint-initdb.d/pg_init.sql
+        ports:
+            - "5434:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+```
 **⚙️ Setup Steps**
 1. Intialize dbt project
 ```bash
@@ -134,19 +154,53 @@ Before deployment, test:
 
 **Run dbt tests**:
 ```bash
+dbt debug
+dbt deps
 dbt test --profiles-dir /root/.dbt
+dbt run
 ```
 
-## 7. 🚀 Deployment: Push and Release Docker Images
+## 7. 🚀 Deployment: Build and Push Docker Images via GitHub Actions
 
-To automate the release process, you can use the provided shell [`./scripts/push_images.sh`](./scripts/push_images.sh) to push all built Docker images to your Docker Hub repository.
+!["Github Workflow"](./docs/ochestration.png)
 
-To Run the script to push your images:
-```bash
-chmod +x ./scripts/push_images.sh
-./scripts/push_images.sh
-```
-This ensures that all your Docker images are properly tagged and pushed to Docker Hub, allowing anyone to pull and run them without rebuilding locally.
+To streamline the deployment process, this project uses GitHub Actions to automatically test the `etl` and `dbt` process after which it build and push Docker images to your Docker Hub repository whenever changes are pushed to the `main` branch.
+
+**⚡ Workflow Triggers**
+
+The workflow runs automatically based on three triggers:
+1. **Push to the main branch** — whenever new changes are merged or committed to main.
+2. **Manual trigger** — can be executed directly from the Actions tab in GitHub for on-demand builds.
+3. **Scheduled trigger (CRON)** — runs every day at 12:00 AM UTC to build and push the latest image.
+
+**Secrets**
+
+Before using this automation, make sure you’ve added the following repository secrets in your GitHub project settings:
+
+- DOCKERHUB_USERNAME → your Docker Hub username
+- DOCKERHUB_TOKEN → a Docker Hub personal access token for authentication
+- DATABASE_USER → postgesql database username
+- DATABASE_PASSWORD → postgesql database password
+- DATABASE_NAME → postgesql database name
+
+Once your GitHub secrets are properly configured, the workflow will:
+
+1. Build the ETL and DBT Docker image from the [./docker/etl/Dockerfile](./docker/etl/Dockerfile) and [./docker/dbt/Dockerfile](./docker/dbt/Dockerfile).
+2. Tag it with:
+    - latest (for the most recent build)
+    - The Git commit SHA (for traceability)
+3. Push both tags to your Docker Hub account.
+
+
+
+### 🧩 How It Works
+
+- The workflow is triggered to test the ETL pipeline by extracting and loading raw datasets into the PostgreSQL database.
+- It runs both the ETL and DBT processes in parallel, ensuring that data transformation and quality checks are validated together.
+- Once the ETL test pipeline completes successfully, the workflow proceeds to build and tag your ETL Docker image for versioning and traceability, and then pushes it to your Docker Hub repository.
+- The DBT test pipeline also runs in parallel to confirm that all models and tests pass successfully.
+
+
 
 
 ## 8. 📊 Visualization and Report (Streamlit)

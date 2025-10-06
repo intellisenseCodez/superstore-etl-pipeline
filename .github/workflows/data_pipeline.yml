@@ -2,8 +2,8 @@ name: ETL Data Pipeline
 
 on:
     workflow_dispatch: # manual trigger
-    # schedule:
-    #     - cron: '0 0 * * *'  # Runs at 12.00 AM every day
+    schedule:
+        - cron: '0 0 * * *'  # Runs at 12.00 AM every day
     push:
         branches:
             - main
