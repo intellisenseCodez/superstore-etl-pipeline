@@ -19,14 +19,13 @@ jobs:
             - name: Set up python 3.10
               uses: actions/setup-python@v6
               with:
-                python-version: 3.10
+                python-version: "3.10"
             
             - name: Install dependencies
               run: |
-                cd src
+                echo "Installing requirements ..."
                 python -m pip install --upgrade pip
-                pip install coverage
-                if  [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+                pip install -r requirements.txt
 
             - name: Extract and Load Raw Data to Postgres
               run: python elt/main.py
