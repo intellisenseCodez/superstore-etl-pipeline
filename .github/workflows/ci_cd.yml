@@ -116,6 +116,12 @@ jobs:
                 pip install --upgrade pip
                 pip install dbt-postgres
 
+            - name: Copy dbt profile
+              run: |
+                mkdir -p ~/.dbt
+                cp profiles.yml ~/.dbt/profiles.yml
+                echo "✅ Copied profiles.yml to ~/.dbt/"
+
             - name: Verify dbt project
               run: |
                 echo "Checking dbt project validity..."
@@ -126,10 +132,10 @@ jobs:
               run: |
                 echo "🏗️ Running dbt models..."
                 cd ./dbt
-                dbt run --profiles-dir ./profiles.yml
+                dbt run --profiles-dir .
 
             - name: Run dbt tests
               run: |
                 echo "🧪 Running dbt tests..."
                 cd ./dbt
-                dbt test --profiles-dir ./profiles.yml
+                dbt test --profiles-dir .
