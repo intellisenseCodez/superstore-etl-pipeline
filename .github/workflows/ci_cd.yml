@@ -54,8 +54,11 @@ jobs:
                 DATABASE_HOST: postgres
                 PORT: 5432
               run: |
-                echo "🚀 Running ETL pipeline..."
-                python etl/main.py
+                echo '⏳ Waiting for PostgreSQL initialization...'
+                echo '🚀 Starting ETL process...'
+                sleep 10
+                python3 etl/main.py
+                echo '✅ ETL pipeline completed successfully.'
 
 
             
