@@ -162,9 +162,10 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                 context: .
+                file: ./docker/etl/Dockerfile
                 push: true
                 tags: |
-                    ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:latest -f ./docker/etl/Dockerfile
+                    ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:latest
                     ${{ secrets.DOCKERHUB_USERNAME }}/etl-app-pipeline:${{ github.sha }}
 
             - name: Image Summary
@@ -195,9 +196,10 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                 context: .
+                file: ./docker/dbt/Dockerfile
                 push: true
                 tags: |
-                    ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:latest -f ./docker/dbt/Dockerfile
+                    ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:latest
                     ${{ secrets.DOCKERHUB_USERNAME }}/dbt_project:${{ github.sha }}
 
             - name: Image Summary
