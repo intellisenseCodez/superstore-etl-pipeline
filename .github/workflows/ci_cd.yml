@@ -11,6 +11,26 @@ jobs:
     extract-and-load:
         name: Extract and Load Raw Data to Postgres
         runs-on: ubuntu-latest
+        env:
+            DATABASE_USER: ${{ secrets.DATABASE_USER }}
+            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+
+        services:
+            postgres:
+                image: postgres:14
+                env:
+                    POSTGRES_USER: ${{ env.DATABASE_USER }}
+                    POSTGRES_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+                    POSTGRES_DB: ${{ env.DATABASE_NAME }}
+                ports:
+                    - "5432:5432"
+                options: >-
+                    --health-cmd pg_isready -U ${{ env.DATABASE_USER }}
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+            
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -27,6 +47,12 @@ jobs:
                 pip install -r requirements.txt
 
             - name: extract and load data
+              env:
+                DATABASE_NAME: ${{ env.DATABASE_NAME }}
+                DATABASE_USER: ${{ env.DATABASE_USER }}
+                DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+                DATABASE_HOST: postgres
+                PORT: 5432
               run: |
                 echo "🚀 Running ETL pipeline..."
                 python etl/main.py
