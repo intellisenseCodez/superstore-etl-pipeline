@@ -50,19 +50,22 @@ jobs:
                 DATABASE_NAME: ${{ env.DATABASE_NAME }}
                 DATABASE_USER: ${{ env.DATABASE_USER }}
                 DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-                DATABASE_HOST: $(docker ps --format "{{.Names}}" | grep -i postgres || true)
+                DATABASE_HOST: postgres
                 PORT: 5432
               run: |
                 echo '⏳ Waiting for PostgreSQL initialization...'
+                for i in {1..15}; do
+                    if pg_isready -h $DATABASE_HOST -U $DATABASE_USER > /dev/null 2>&1; then
+                        echo "✅ PostgreSQL is ready!"
+                    break
+                    fi
+                    
+                    echo "Waiting for database ($i/15)..."
+                    sleep 5
+                done
+                
                 echo '🚀 Starting ETL process...'
-                sleep 10
-
-                # Detect postgres container dynamically
-                POSTGRES_HOST=$(docker ps --format "{{.Names}}" | grep -i postgres || echo "postgres_db")
-
-                echo "📦 Using database host: $POSTGRES_HOST"
-                export DATABASE_HOST=$POSTGRES_HOST
-
+            
                 python3 etl/main.py
                 echo '✅ ETL pipeline completed successfully.'
 
