@@ -11,19 +11,23 @@ jobs:
     extract-and-load:
         name: Extract and Load Raw Data to Postgres
         runs-on: ubuntu-latest
+        env:
+            DATABASE_USER: ${{ secrets.DATABASE_USER }}
+            DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
  
         services:
             postgres:
                 image: postgres:14
                 env:
-                    POSTGRES_USER: ${{ secrets.DATABASE_USER }}
-                    POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-                    POSTGRES_DB: ${{ secrets.DATABASE_NAME }}
+                    POSTGRES_USER: $DATABASE_USER
+                    POSTGRES_PASSWORD: $DATABASE_PASSWORD
+                    POSTGRES_DB: $DATABASE_NAME
                 ports:
                     - "5432:5432"
                 options: >-
                     --hostname=postgres_db
-                    --health-cmd="pg_isready -U ${{ secrets.DATABASE_USER }}" 
+                    --health-cmd="pg_isready -U $DATABASE_USER
                     --health-interval=10s 
                     --health-timeout=5s 
                     --health-retries=5
