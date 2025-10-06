@@ -15,7 +15,7 @@ jobs:
             DATABASE_USER: ${{ secrets.DATABASE_USER }}
             DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
             DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-            DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+            DATABASE_HOST: postgres_db
  
         services:
             postgres:
@@ -43,15 +43,24 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
 
+                
+            - name: Wait for Postgres to be ready
+              run: |
+                until pg_isready -h ${{ env.DATABASE_HOST }} -p 5432 -U ${{ env.DATABASE_USER }}; do
+                    echo "Waiting for Postgres..."
+                    sleep 10
+                done
+                echo "✅ Postgres is ready!"
+
 
             - name: Extract and Load Raw Data to Postgres
               env:
                 DATABASE_NAME: ${{ env.DATABASE_NAME }}
                 DATABASE_USER: ${{ env.DATABASE_USER }}
                 DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-                DATABASE_HOST: postgres_db
+                DATABASE_HOST: ${{ env.DATABASE_HOST }} 
                 PORT: ${{ job.services.postgres.ports[5432] }}
               run: |
-                echo "Hello world"
+                echo "🚀 Running ETL process..."
                 python etl/main.py
 
