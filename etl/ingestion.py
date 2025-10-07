@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from utils import SCHEMA
 from logger import logger
 
@@ -16,6 +16,9 @@ class DataIngestion:
             
             
             engine = create_engine(f'postgresql+psycopg2://{self.db_params["user"]}:{self.db_params["password"]}@{self.db_params["host"]}:{self.db_params["port"]}/{self.db_params["dbname"]}')
+
+            with engine.begin() as conn:
+                conn.execute(text("DROP TABLE IF EXISTS raw.raw_orders CASCADE;"))
 
             df.to_sql(table_name, engine, schema=SCHEMA, if_exists='replace', index=False)
 

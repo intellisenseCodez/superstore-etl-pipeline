@@ -2,7 +2,7 @@
 
 ![High Level Architecture](./docs/image.png)
 
-This project implements a **modern data analytics pipeline** for the *Superstore Sales* dataset using **PostgreSQL**, **dbt**, **Docker**, and **Power BI**, following the **Medallion Architecture (Bronze → Silver → Gold)** pattern.
+This project implements a **modern data analytics pipeline** for the *Superstore Sales* dataset using **PostgreSQL**, **dbt**, **Docker**, and **Streamlit**, following the **Medallion Architecture (Bronze → Silver → Gold)** pattern.
 
 ## 📚 Table of Contents
 1. [ 🗂️ Project Overview](#️-project-overview)
@@ -14,13 +14,14 @@ This project implements a **modern data analytics pipeline** for the *Superstore
 7. [🧪 Testing and Validation](#6--testing-and-validation)  
 8. [🚀 Deployment: Push and Release Docker Images](#7--deployment-build-and-push-docker-images-via-github-actions)  
 9. [📊 Visualization and Report (Streamlit)](#8--visualization-and-report-streamlit)
+10. [⚙️ Usage](#9-usage)
 
 
 
 ## 🗂️ Project Overview
 
 ### 🎯 Objective
-To design a fully containerized ETL + Analytics solution that:
+To design and build a fully managed and container`ized ETL + Analytics pipeline that has an Extract with Python, Load into a Staging Database and then Transform with DBT.
 - Ingests raw CSV sales data.
 - Cleans, transforms, and models it with dbt.
 - Exposes clean analytical models for reporting.
@@ -38,7 +39,7 @@ To design a fully containerized ETL + Analytics solution that:
 
 | Layer | Description | Tools/Tasks |
 |-------|--------------|-------------|
-| **Source** | CSV file containing raw Superstore data | Local file / S3 upload |
+| **Source** | CSV file containing raw Superstore data | Local file / Kagglehub API |
 | **Bronze Layer (Raw Data)** | Raw data ingested into PostgreSQL without transformation | Python Loader Script |
 | **Silver Layer (Staging)** | Data cleaning, normalization, derived columns | dbt models (`stg_`) |
 | **Gold Layer (Business Models)** | Aggregated and business-ready data for analytics | dbt models (`mart_`) |
@@ -72,11 +73,6 @@ PORT=5432
 ## 3. 🐘 Postgres Setup
 
 The PostgreSQL database acts as the central warehouse. A Postgres docker image was used.
-
-
-## 4. 🧠 DBT Setup
-
-`dbt` is used for data modeling, transformations, and documentation.
 ```bash
 services:
    
@@ -98,6 +94,36 @@ services:
             retries: 5
             start_period: 10s
 ```
+
+## 4. 🧠 DBT Setup
+
+`dbt` is used for data modeling, transformations, and documentation.
+```bash
+#Use a base Python image
+FROM python:3.10-slim
+
+# Install dbt and dbt-postgres
+RUN pip install dbt-core dbt-postgres
+
+# Set the working directory inside the container
+WORKDIR /src/dbt
+
+# Copy profile.yml
+COPY profiles.yml /root/.dbt/profiles.yml
+
+# Copy your dbt project files into the container
+COPY ./dbt .
+
+# Default command to run if no other command is specified
+CMD ["bash", "-c", "\
+    echo '🚀 Running dbt build...'; \
+    dbt deps --profiles-dir /root/.dbt; \
+    dbt build --profiles-dir /root/.dbt; \
+    echo '✅ dbt build complete.'; \
+    tail -f /dev/null \
+"]
+```
+
 **⚙️ Setup Steps**
 1. Intialize dbt project
 ```bash
@@ -130,9 +156,10 @@ All components run inside **Docker containers** for easy setup and portability.
 
 ### Services:
 - **PostgreSQL** → Data warehouse backend  
+- **ETL App** → ETL App  
 - **dbt** → Transformation and data modeling  
-- **pgadmin** *(optional)* → Database admin GUI  
-- **Power BI** → Consumes data from `gold` layer 
+
+
 
 Build Image
 
@@ -218,6 +245,15 @@ streamlit run streamlit/app.py
 
 **Dashboard Preview**:
 
+## 9. ⚙️ Usage
+To build and start the containers in detached mode:
+```bash
+docker-compose up --build -d
+```
+To stop and remove all containers, networks, and volumes:
+```bash
+docker-compose down -v
+```
 
 ## 📚 Summary
 
