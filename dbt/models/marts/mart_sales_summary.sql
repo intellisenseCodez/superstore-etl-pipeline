@@ -16,3 +16,4 @@ sales_summary as (
 )
 
 select * from sales_summary
+

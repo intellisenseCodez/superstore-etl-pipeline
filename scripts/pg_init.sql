@@ -41,7 +41,7 @@ GRANT ALL PRIVILEGES ON DATABASE superstore TO dev_user;
 
 
 -- drop table if exit
-DROP TABLE IF EXISTS raw.raw_orders;
+DROP TABLE IF EXISTS raw.raw_orders CASCADE;
 
 -- Create Raw_orders table inside raw schema
 CREATE TABLE raw.raw_orders (

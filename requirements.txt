@@ -4,3 +4,5 @@ kagglehub
 python-dotenv
 psycopg2-binary
 SQLAlchemy
+streamlit
+plotly
