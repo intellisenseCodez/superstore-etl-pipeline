@@ -166,13 +166,13 @@ jobs:
                 file: ./docker/etl/Dockerfile
                 push: true
                 tags: |
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/etl_app:latest
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/etl_app:${{ github.sha }}
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_etl_app:latest
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_etl_app:${{ github.sha }}
 
             - name: Image Summary
               run: |
                 echo "✅ Successfully built and pushed Docker image:"
-                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore/etl_app:latest"
+                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore_etl_app:latest"
 
 
     build-and-push-dbt-docker:
@@ -200,18 +200,18 @@ jobs:
                 file: ./docker/dbt/Dockerfile
                 push: true
                 tags: |
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/dbt_app:latest
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/dbt_app:${{ github.sha }}
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_dbt_app:latest
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_dbt_app:${{ github.sha }}
 
             - name: Image Summary
               run: |
                 echo "✅ Successfully built and pushed Docker image:"
-                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore/dbt_app:latest"
+                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore_dbt_app:latest"
 
     build-and-push-streamlit-docker:
         name: Build & Push Streamlit Docker Image
         runs-on: ubuntu-latest
-        needs: [test-dbt-pipeline]
+        needs: [build-and-push-dbt-docker, build-and-push-etl-docker]
 
         steps:
             - name: Checkout code
@@ -233,10 +233,10 @@ jobs:
                 file: ./docker/streamlit/Dockerfile
                 push: true
                 tags: |
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/streamlit_app:latest
-                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore/streamlit_app:${{ github.sha }}
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_streamlit_app:latest
+                    ${{ secrets.DOCKERHUB_USERNAME }}/superstore_streamlit_app:${{ github.sha }}
 
             - name: Image Summary
               run: |
                 echo "✅ Successfully built and pushed Docker image:"
-                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore/streamlit_app:latest"
+                echo "🔹 Image: ${{ secrets.DOCKERHUB_USERNAME }}/superstore_streamlit_app:latest"
