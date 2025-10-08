@@ -48,6 +48,23 @@ services:
             DATABASE_PASSWORD: ${DATABASE_PASSWORD}
             DATABASE_HOST: postgres_db
             DATABASE_PORT: 5432
+        
+    streamlit_app:
+        build:
+            context: .
+            dockerfile: ./docker/streamlit/Dockerfile
+        container_name: streamlit_app
+        depends_on:
+            postgres_db:
+               condition: service_healthy
+        ports:
+            - "8501:8501"
+        environment:
+            DATABASE_NAME: ${DATABASE_NAME}
+            DATABASE_USER: ${DATABASE_USER}
+            DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+            DATABASE_HOST: postgres_db
+            DATABASE_PORT: 5432
 
 
 volumes:

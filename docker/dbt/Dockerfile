@@ -16,8 +16,11 @@ COPY ./dbt .
 # Default command to run if no other command is specified
 CMD ["bash", "-c", "\
     echo '🚀 Running dbt build...'; \
+    dbt clean; \
     dbt deps --profiles-dir /root/.dbt; \
+    dbt debug; \
     dbt build --profiles-dir /root/.dbt; \
+    dbt run; \
     echo '✅ dbt build complete.'; \
     tail -f /dev/null \
 "]
