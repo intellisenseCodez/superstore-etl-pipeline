@@ -10,11 +10,12 @@ This project implements a **modern data analytics pipeline** for the *Superstore
 3. [🐍 Python ETL Setup](#2-python-etl-setup)  
 4. [🐘 Postgres Setup](#3--postgres-setup)  
 5. [🧠 DBT Setup](#4--dbt-setup)  
-6. [🐳 Orchestration: Dockerized Architecture](#5--ochestration-dockerized-architecture)  
-7. [🧪 Testing and Validation](#6--testing-and-validation)  
-8. [🚀 Deployment: Push and Release Docker Images](#7--deployment-build-and-push-docker-images-via-github-actions)  
-9. [📊 Visualization and Report (Streamlit)](#8--visualization-and-report-streamlit)
-10. [⚙️ Usage](#9-usage)
+6. [🧠 Streamlit Setup](#5--streamlit-setup)  
+7. [🐳 Orchestration: Dockerized Architecture](#6--ochestration-dockerized-architecture)  
+8. [🧪 Testing and Validation](#7--testing-and-validation)  
+9. [🚀 Deployment: Push and Release Docker Images](#8--deployment-build-and-push-docker-images-via-github-actions)  
+10. [📊 Visualization and Report (Streamlit)](#9--visualization-and-report-streamlit)
+11. [⚙️ Usage](#10-️-usage)
 
 
 
@@ -148,9 +149,28 @@ dbt docs generate
 dbt docs serve
 ```
 
+## 5. 🧠 Streamlit Setup
+```bash
+# Base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install libraries
+RUN pip install pandas streamlit plotly SQLAlchemy python-dotenv psycopg2-binary
 
 
-## 5. 🐳 Ochestration: Dockerized Architecture
+# Copy your streamlit project files into the container
+COPY ./streamlit .
+
+EXPOSE 8501
+
+# run streamlit app
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+```
+
+## 6. 🐳 Ochestration: Dockerized Architecture
 
 All components run inside **Docker containers** for easy setup and portability.
 
@@ -158,6 +178,7 @@ All components run inside **Docker containers** for easy setup and portability.
 - **PostgreSQL** → Data warehouse backend  
 - **ETL App** → ETL App  
 - **dbt** → Transformation and data modeling  
+- **streamlit**  → Data Visualization
 
 
 
@@ -171,7 +192,7 @@ docker-compose down -v
 **Ouput**
 ![All containers](./docs/all_containers.png)
 
-## 6. 🧪 Testing and Validation
+## 7. 🧪 Testing and Validation
 
 Before deployment, test:
 
@@ -187,7 +208,7 @@ dbt test --profiles-dir /root/.dbt
 dbt run
 ```
 
-## 7. 🚀 Deployment: Build and Push Docker Images via GitHub Actions
+## 8. 🚀 Deployment: Build and Push Docker Images via GitHub Actions
 
 !["Github Workflow"](./docs/ochestration.png)
 
@@ -228,7 +249,7 @@ Once your GitHub secrets are properly configured, the workflow will:
 - The DBT test pipeline also runs in parallel to confirm that all models and tests pass successfully.
 
 
-## 8. 📊 Visualization and Report (Streamlit)
+## 9. 📊 Visualization and Report (Streamlit)
 
 The Streamlit dashboard visualizes your mart data for reporting and analytics.
 
@@ -245,7 +266,9 @@ streamlit run streamlit/app.py
 
 **Dashboard Preview**:
 
-## 9. ⚙️ Usage
+![Dashboard Preview](./docs/dashboard.png)
+
+## 10. ⚙️ Usage
 To build and start the containers in detached mode:
 ```bash
 docker-compose up --build -d

@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install libraries
-RUN pip install pandas streamlit plotly SQLAlchemy python-dotenv
+RUN pip install pandas streamlit plotly SQLAlchemy python-dotenv psycopg2-binary
 
 
 # Copy your streamlit project files into the container

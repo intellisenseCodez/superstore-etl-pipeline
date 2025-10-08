@@ -34,6 +34,7 @@ models:
   dbt_store:
     # Config indicated by + and applies to all files under models/example/
     staging:
+      +schema: bronze
       +materialized: view
     intermediate:
       +schema: gold
