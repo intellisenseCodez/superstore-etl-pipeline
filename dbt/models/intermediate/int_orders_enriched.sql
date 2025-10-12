@@ -1,7 +1,6 @@
 with base as (
     select * from {{ ref('stg_orders') }}
 ),
-
 enriched as (
     select
         *,

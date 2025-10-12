@@ -22,7 +22,7 @@ This project implements a **modern data analytics pipeline** for the *Superstore
 ## 🗂️ Project Overview
 
 ### 🎯 Objective
-To design and build a fully managed and container`ized ETL + Analytics pipeline that has an Extract with Python, Load into a Staging Database and then Transform with DBT.
+To design and build a fully managed and containerized ETL + Analytics pipeline that has an Extract with Python, Load into a Staging Database and then Transform with DBT.
 - Ingests raw CSV sales data.
 - Cleans, transforms, and models it with dbt.
 - Exposes clean analytical models for reporting.
